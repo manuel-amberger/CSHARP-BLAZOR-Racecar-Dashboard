@@ -1,0 +1,620 @@
+﻿@page "/apexview"
+@using ApexView
+@inject IJSRuntime JS
+@inject RepeatingTaskService TaskService
+
+<!-- Dashboard Wrapper --->
+<div id="dashboardWrapper" class="@(CrashState != ECrashState.NONE || IsRaceFinished ? "dashboardBlur" : String.Empty)">
+    <!-- Auto-Auswahl + Fahrer Informationen Karte -->
+    <div class="cardWrapper">
+        <button id="dropdownButton" class="btn btn-dark p-0 @(!ShowDropdownButton ? "d-none" : String.Empty)" @onclick="ToggleDropdownTable">
+            <img class="w-100 h-200 d-flex justify-content-center align-items-center" src="img/@CurrentCar.ImgUrl">
+        </button>
+
+        <div id="dropdownWrapper" class="overflow-auto @(ShowDropdownTable ? String.Empty : "d-none")">
+            <table>
+                @foreach (var car in CarFactory.CarList.OrderBy(c => c.Position)) {
+                    <tr>
+                        <td @onclick="() => ToggleDropdownButton(car)">
+                            <span class="fs-5 mb-1 d-flex justify-content-center"><span class="position">@car.Position</span><b>@car.Driver.Name</b></span>
+                            <img class="w-100" src="img/@car.ImgUrl"/>
+                            <hr class="hrThick"/>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <div id="driverInformationWrapper" class="mt-4 fs-5">
+            <p><span>Name:</span> @CurrentCar.Driver.Name</p>
+            <p><span>Team:</span> @CurrentCar.Team.Name</p>
+            <p><span>Alter:</span> @CurrentCar.Driver.Age</p>
+        </div>
+    </div>
+
+    
+    <!-- Stopuhr + Position Karte -->
+    <div class="cardWrapper">
+        <div id="stopwatchWrapper">
+            <p>Aktuelle Rundenzeit</p>
+            <div>
+                <span>@CurrentCar.RoundTimeM.ToString("00"):@CurrentCar.RoundTimeS.ToString("00"):00</span>
+            </div>
+        </div>
+
+        <div id="positionWrapper" class="mt-2">
+            <p>Position</p>
+            <p id="position">@CurrentCar.Position</p>
+        </div>
+    </div>
+
+
+    <!-- Rennstrecke + Wetter Karte -->
+    <div id="circuitWrapper" class="cardWrapper">
+        <img id="circuit" src="img/RedBullRing.png">
+        <div class="carDot" id="@($"car{CurrentCar.TrackPos}")">&nbsp;</div>
+
+        <p id="weather" class="mt-4"><span>Wetter: </span>@WeatherHelper.Map[Track.Weather]</p>
+    </div>
+
+
+    <!-- Rundenzeiten Karte -->
+    <div id="lapTimesWrapper" class="cardWrapper">
+        <h3>Rundenzeiten</h3>
+
+        <div id="lapTimeLoader" class="@(CurrentCar.RoundTimes.Count < 1 ? String.Empty : "hide")">
+            @for (int i = 0; i < 3; i++) {
+                <div class="lapRow loader">
+                    <span class="lapNumber">1</span>
+                    <span class="lapTime">00:00:00</span>
+                    <span class="lapGap">-00:00:00</span>
+                </div>
+            }
+        </div>
+        
+        <div id="lapTimeTableContainer">
+            @for (int i = 0; i < CurrentCar.RoundTimes.Count; i++) {
+                var laptime = CurrentCar.RoundTimes[i];
+                var timeSpan = TimeSpan.FromSeconds(laptime);
+                <div class="lapRow">
+                    <span class="lapNumber">@(i + 1)</span>
+                    <span class="lapTime">@timeSpan.ToString(@"mm\:ss"):00</span>
+                    <span class="lapGap @GetLaptimeDeltaColor(laptime)">@(laptime == CurrentCar.BestRoundTime ? "-:-:-" : (laptime-CurrentCar.BestRoundTime).ToString("+000;-000;000"))</span>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <!-- Generelle Informationen Karte -->
+    <div class="cardWrapper">
+        <div id="eventContainer"><span class="value">@FlagHelper.Map[CurrentCar.Flags.Last()]</span></div>
+
+        <div id="gaugeContainer">
+            <div id="speedGauge" class="gauge">
+                <canvas id="speedCanvas" class="gauge"></canvas>
+                <div class="inner">
+                    <div class="value">@CurrentCar.CarData.Velocity</div>
+                    <div class="label">km/h</div>
+                </div>
+            </div>
+
+            <div id="rpmGauge" class="gauge">
+                <canvas id="rpmCanvas" class="gauge"></canvas>
+                <div class="inner">
+                    <div class="value">@CurrentCar.CarData.Torque</div>
+                    <div class="label">rpm</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gear">
+            <p><span class="value">@CurrentCar.CarData.Gear. </span><span class="label">Gang</span></p>
+        </div>
+    </div>
+
+
+    <!-- Geschwindigkeit Chart Karte -->
+    <div id="speedChartWrapper" class="cardWrapper">
+        <h3>Geschwindigkeit</h3>
+        <canvas id="speedChart"></canvas>
+    </div>
+
+
+    <!-- Drehzahl Chart Karte -->
+    <div id="rpmChartWrapper" class="cardWrapper">
+        <h3>Drehzahl</h3>
+        <canvas id="rpmChart"></canvas>
+    </div>
+
+
+    <!-- Reifen Monitor Karte -->
+    <div id="tireWrapper" class="cardWrapper">
+        <h3>Reifen</h3>
+        
+        <div id="tireGridContainer">
+            <div id="tireColLeft" class="tireCol">
+                <div class="tireContainer">
+                    <div class="tireValue">
+                        <p>@CurrentCar.CarData.TireLeftF.Pressure psi</p>
+                        <p>@CurrentCar.CarData.TireLeftF.Temperature °C</p>
+                    </div>
+                    <div class="tire @GetTireColorClass(CurrentCar.CarData.TireLeftF.Temperature)">&nbsp;</div>
+                </div>
+                <div class="tireContainer">
+                    <div class="tireValue">
+                        <p>@CurrentCar.CarData.TireLeftR.Pressure psi</p>
+                        <p>@CurrentCar.CarData.TireLeftR.Temperature °C</p>
+                    </div>
+                    <div class="tire @GetTireColorClass(CurrentCar.CarData.TireLeftR.Temperature)">&nbsp;</div>
+                </div>
+            </div>
+        
+            <div id="carCol">
+                <img id="carPicture" src="img/CarTop.png">
+            </div>
+        
+            <div id="tireColRight" class="tireCol">
+                <div class="tireContainer">
+                    <div class="tire @GetTireColorClass(CurrentCar.CarData.TireRightF.Temperature)">&nbsp;</div>
+                    <div class="tireValue">
+                        <p>@CurrentCar.CarData.TireRightF.Pressure psi</p>
+                        <p>@CurrentCar.CarData.TireRightF.Temperature °C</p>
+                    </div>
+                </div>
+                <div class="tireContainer">
+                    <div class="tire @GetTireColorClass(CurrentCar.CarData.TireRightR.Temperature)">&nbsp;</div>
+                    <div class="tireValue">
+                        <p>@CurrentCar.CarData.TireRightR.Pressure psi</p>
+                        <p>@CurrentCar.CarData.TireRightR.Temperature °C</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Big/Small Crash Overlay -->
+@if (CrashState != ECrashState.NONE) {
+    <div id="crashOverlayWrapper">
+        <div id="crashOverlay" class="@(CrashState == ECrashState.BIG ? "bigCrash" : "smallCrash")">
+            <h2 class="heading">@(CrashState == ECrashState.BIG ? "Schwerer Unfall" : "Leichter Unfall")</h2>
+            <h4 class="driver"><b>Fahrer:</b> @CurrentCar.Driver.Name (@CurrentCar.Team.Name)</h4>
+            <h4 class="state"><b>Status:</b> @(CrashState == ECrashState.BIG ? FlagHelper.Map[EFlags.STANDING_ON_TRACK] : FlagHelper.Map[EFlags.SMALL_DAMAGE])</h4>
+            <h4><b>Zeitverlust:</b> @(CrashState == ECrashState.BIG ? "+120 Sek." : "+60 Sek.")</h4>
+            <button class="btn btn-light" @onclick="CloseCrashOverlay">Zurück zum Dashboard</button>
+        </div>
+    </div>
+}
+
+<!-- Podium Overlay -->
+@if (IsRaceFinished) {
+    <div id="podiumOverlayWrapper">
+        <div id="podiumOverlay">
+            <h2 class="heading">Rennen beendet</h2>
+            <h3 class="secondaryHeading"><b>Podium:</b></h3>
+            @{ var podium = CarFactory.CarList.OrderBy(c => c.Position).Take(3).ToList(); }
+            <div id="podiumList">
+                <p id="p1"><b>1. Platz: </b>@podium[0].Driver.Name (@podium[0].Team.Name)</p>
+                <p id="p2"><b>2. Platz: </b>@podium[1].Driver.Name (@podium[1].Team.Name)</p>
+                <p id="p3"><b>3. Platz: </b>@podium[2].Driver.Name (@podium[2].Team.Name)</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // Properties
+    public Car CurrentCar { get; set; } = new();
+
+    public bool IsRaceFinished { get; set; } = false;
+    public ECrashState CrashState { get; set; } = ECrashState.NONE;
+
+    public bool ShowDropdownTable { get; set; } = false;
+    public bool ShowDropdownButton { get; set; } = true;
+
+    protected override void OnInitialized() {
+        // Dropdown initialisieren
+        foreach (var car in CarFactory.CarList) {
+            if (car.Position == 1) {
+                CurrentCar = car;
+                break;
+            }
+        }
+
+        // Streckentemperatur & Wetter initialisieren
+        Track.Temperature = Dice.TemperaturRoll();
+        WeatherChange();
+        
+        TaskService.OnTick += SiteUpdater;
+        TaskService.OnTick += UpdateGui;
+    }
+
+    // Charts/Gauges initialisieren
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            // Charts initialisieren
+            const int maxPoints = 30;
+
+            var preFilledLabels = new string[maxPoints]; 
+            for (int i = 0; i < maxPoints; i++) {
+                preFilledLabels[i] = "";
+            }
+
+            var preFilledSpeed = new int[maxPoints];
+            var preFilledRpm = new int[maxPoints];
+            
+            for (int i = 0; i < maxPoints; i++) {
+                preFilledSpeed[i] = 0;
+                preFilledRpm[i] = 1200;
+            }
+            
+            await JS.InvokeVoidAsync("createCharts", preFilledLabels, preFilledSpeed, preFilledRpm);
+            
+            // Gauges initialisieren
+            await JS.InvokeVoidAsync("gaugeInterop.initGauge", "rpmCanvas", 13000);
+            await JS.InvokeVoidAsync("gaugeInterop.initGauge", "speedCanvas", 350);
+        }
+    }
+
+    // Updaten der WebGui
+    protected void UpdateGui() {
+        StateHasChanged();
+    }
+    
+    protected void SiteUpdater() {
+        // "Jede Sekunde wird dieses Ding aufgerufen", Florian Heinreichsurgler SJ2025/26
+
+        // Keine Aktion wenn Rennen beendet
+        if (IsRaceFinished) return;
+
+        foreach (var car in CarFactory.CarList) {
+            // Streckenfortschritt berechnen
+            double progressIncrement = 1.0 / car.RoundTime;
+            
+            if (car.Flags.Last() == EFlags.IN_BOX) {
+                car.TrackProgress = 0.0;
+            }
+
+            // Streckenfortschritt aufaddieren
+            if (car.Flags.Last() != EFlags.STANDING_ON_TRACK && car.Flags.Last() != EFlags.NO_ENGINE && car.Flags.Last() != EFlags.IN_BOX && car.Flags.Last() != EFlags.ON_TOWTRUCK) {
+                car.TrackProgress += progressIncrement;
+            }
+
+            // Standard-Grenzwerte
+            int targetSpeed = 220;
+            int accelRate = 25;
+            int brakeRate = 45;
+            
+            // TrackProgress Einteilung
+            double p = car.TrackProgress;
+            if (p < 0.12) {
+                // Start/Ziel Gerade
+                targetSpeed = 280; accelRate = 20;
+                car.TrackPos = 1;
+            } else if (p >= 0.12 && p < 0.18) {
+                // 1. Kurve (unten links)
+                targetSpeed = 85; brakeRate = 40;
+            } else if (p >= 0.18 && p < 0.32) {
+                // Lange Gerade zur zweiten Kurve
+                targetSpeed = 310; accelRate = 30;
+                car.TrackPos = 2;
+            } else if (p >= 0.32 && p < 0.38) {
+                // 2. Kurve (oben links)
+                targetSpeed = 80; brakeRate = 45;
+                car.TrackPos = 3;
+            } else if (p >= 0.38 && p < 0.55) {
+                // Obere Gerade (Schönberggerade)
+                targetSpeed = 320; accelRate = 35;
+            } else if (p >= 0.55 && p < 0.62) {
+                // 3. Kurve (oben rechts)
+                targetSpeed = 90; brakeRate = 40;
+                car.TrackPos = 4;
+            } else if (p >= 0.62 && p < 0.75) {
+                // Gerade & Infield 4. Kurve
+                targetSpeed = 120; accelRate = 10;
+                car.TrackPos = 5;
+            } else if (p >= 0.75 && p < 0.82) {
+                // Infield 5. Kurve
+                targetSpeed = 85; brakeRate = 30;
+                car.TrackPos = 6;
+            } else if (p >= 0.82 && p < 0.92) {
+                // Letzte Gerade vor letzten 2 Kurven
+                targetSpeed = 290; accelRate = 30;
+                car.TrackPos = 7;
+            } else if (p >= 0.92 && p <= 1.0) {
+                // Letzte Kurve vor Start/Ziel
+                targetSpeed = 105; brakeRate = 40;
+                car.TrackPos = 8;
+            } else {
+                car.TrackPos = 1;
+            }
+            
+            // Geschwindigkeit erhöhen bei optimaler Reifentemperatur
+            double tireGripMultiplier = 1.0;
+
+            Tire[] tires = [car.CarData.TireLeftF, car.CarData.TireRightF, car.CarData.TireLeftR, car.CarData.TireRightR];
+            int optimalTiresCount = 0;
+            foreach (var tire in tires) {
+                if (tire.Temperature >= 70.0 && tire.Temperature < 90.0) {
+                    optimalTiresCount++;
+                }
+            }
+
+            if (optimalTiresCount > 0) {
+                tireGripMultiplier += (optimalTiresCount * 0.05); // +5% Grip pro perfektem Reifen
+                targetSpeed += (optimalTiresCount * 5);           // +5 km/h pro perfektem Reifen
+            }
+
+            accelRate = (int)(accelRate * tireGripMultiplier);
+            brakeRate = (int)(brakeRate * tireGripMultiplier);
+
+            // Anhalten bei schwerem Unfall
+            if (car.Flags.Last() == EFlags.STANDING_ON_TRACK || car.Flags.Last() == EFlags.NO_ENGINE || car.Flags.Last() == EFlags.IN_BOX || car.Flags.Last() == EFlags.ON_TOWTRUCK) {
+                targetSpeed = 0; brakeRate = 60;
+            // Geschwindigkeit drosseln bei leichtem Unfall
+            } else if (car.Flags.Last() == EFlags.SMALL_DAMAGE || car.Flags.Last() == EFlags.TIRE_EXPLOSION) {
+                targetSpeed = Math.Min(targetSpeed, 80);
+            }
+            
+            // Geschwindigkeitsänderung anwenden
+            if (car.CarData.Velocity < targetSpeed) {
+                car.CarData.Velocity = Math.Min(car.CarData.Velocity + accelRate, targetSpeed);
+            } else if (car.CarData.Velocity > targetSpeed) {
+                car.CarData.Velocity = Math.Max(car.CarData.Velocity - brakeRate, targetSpeed);
+            }
+            
+            // Gangermittlung
+            int v = car.CarData.Velocity;
+            if (v <= 0) car.CarData.Gear = 0;
+            else if (v > 0 && v <= 60) car.CarData.Gear = 1;
+            else if (v > 60 && v <= 105) car.CarData.Gear = 2;
+            else if (v > 105 && v <= 150) car.CarData.Gear = 3;
+            else if (v > 150 && v <= 195) car.CarData.Gear = 4;
+            else if (v > 195 && v <= 240) car.CarData.Gear = 5;
+            else if (v > 240 && v <= 285) car.CarData.Gear = 6;
+            else if (v > 285 && v <= 310) car.CarData.Gear = 7;
+            else car.CarData.Gear = 8;
+            
+            // RPM-Ermittlung
+            if (car.CarData.Gear == 0) {
+                car.CarData.Torque = 1200;
+            } else {
+                double minSpeedInGear = (car.CarData.Gear - 1) * 45;
+                double maxSpeedInGear = car.CarData.Gear * 45;
+                if (car.CarData.Gear == 8) maxSpeedInGear = 360;
+
+                double gearProgress = (v - minSpeedInGear) / (maxSpeedInGear - minSpeedInGear);
+                gearProgress = Math.Clamp(gearProgress, 0.0, 1.0);
+
+                car.CarData.Torque = (int)(6000 + (gearProgress * 6500));
+            }
+            
+            // Weitere Runde starten nach vollendeter Rundenzeit
+            if ((car.RoundTimeM*60 + car.RoundTimeS) >= (int)car.RoundTime) {
+                // Flags ändern
+                if (car.Flags.Last() == EFlags.IN_BOX || car.Flags.Last() == EFlags.TIRE_EXPLOSION || car.Flags.Last() == EFlags.SMALL_DAMAGE) {
+                    car.Flags.Add(EFlags.DRIVING);
+                }
+                
+                if (car.Flags.Last() == EFlags.STANDING_ON_TRACK || car.Flags.Last() == EFlags.NO_ENGINE || car.Flags.Last() == EFlags.ON_TOWTRUCK) {
+                    car.Flags.Add(EFlags.IN_BOX);
+                }
+                
+                // Aktuelle Runde zur Liste hinzufügen
+                if (car.CurrentRounds > 0) {
+                    car.RoundTimes.Add(car.RoundTimeM*60 + car.RoundTimeS);
+                }
+                
+                // Beste Rundenzeit berechnen
+                if (car.BestRoundTime == 0) car.BestRoundTime = car.RoundTimeM * 60 + car.RoundTimeS;
+
+                foreach (var time in car.RoundTimes) {
+                    if (time < car.BestRoundTime) car.BestRoundTime = time;
+                }
+                
+                // Rundenzeit generieren
+                car.RoundTime = Dice.RoundTimeRoll();
+                
+                // Fortschritt zurücksetzen
+                car.RoundTimeS = 0;
+                car.RoundTimeM = 0;
+                car.TrackProgress = 0.0;
+            
+                // Runden erhöhen
+                car.CurrentRounds++;
+            }
+
+            // Rennen beenden falls erstes Auto Rundenanzahl erreicht
+            if (car.CurrentRounds > Config.DrivingRounds) {
+                IsRaceFinished = true;
+            }
+        }
+
+
+        foreach (var car in CarFactory.CarList) {
+            var bigRoll = Dice.BigRoll();
+            
+            // Reifen Data ändern
+            Tire[] tires = [car.CarData.TireLeftF, car.CarData.TireRightF, car.CarData.TireLeftR, car.CarData.TireRightR];
+            foreach (var tire in tires) {
+                // Bei Stillstand -> Reifen kühlen ab
+                if (car.Flags.Last() == EFlags.IN_BOX || car.Flags.Last() == EFlags.NO_ENGINE || car.Flags.Last() == EFlags.STANDING_ON_TRACK || car.Flags.Last() == EFlags.ON_TOWTRUCK) {
+                    if (tire.Temperature > Track.Temperature) {
+                        int coolingFactor = (tire.Temperature >= 70.0) ? 5 : 10;
+                        tire.Temperature -= Dice.Roll() / coolingFactor;
+            
+                        if (tire.Temperature < Track.Temperature) {
+                            tire.Temperature = Track.Temperature;
+                        }
+                    }
+                    if (tire.Pressure > 25) {
+                        tire.Pressure -= Dice.Roll() / 10;
+                    }
+                    continue;
+                }
+                
+                if (tire.Temperature > 150 && tire.Pressure > 145) {
+                    tire.Pressure = 15; 
+                    car.RoundTime += 30;
+                    car.Flags.Add(EFlags.TIRE_EXPLOSION);
+                } else {
+                    int heatingChance = 50;
+
+                    if (tire.Temperature >= 90.0 && tire.Temperature < 100.0) {
+                        heatingChance = 65;
+                    } else if (tire.Temperature >= 100.0) {
+                        heatingChance = 85;
+                    }
+
+                    if (Track.Weather == EWeather.EXTRASUNNY) {
+                        heatingChance -= 7;
+                    }
+                    else if (Track.Weather == EWeather.RAIN || Track.Weather == EWeather.THUNDER || Track.Weather == EWeather.SNOW) {
+                        heatingChance += 10;
+                    }
+
+                    if (Dice.Roll() >= heatingChance && tire.Pressure < 145 && tire.Temperature < 150) {
+                        tire.Pressure += Dice.Roll() / 10;
+                        tire.Temperature += Dice.Roll() / 5;
+                    } else {
+                        if (tire.Pressure > 25) {
+                            tire.Pressure -= Dice.Roll() / 10;
+                        }
+
+                        if (tire.Temperature > Track.Temperature) {
+                            int coolingFactor = (tire.Temperature >= 100.0) ? 5 : 10;
+                            tire.Temperature -= Dice.Roll() / coolingFactor;
+                        }
+                    }
+                }
+            }
+
+            if (car.Flags.Last() != EFlags.STANDING_ON_TRACK && car.Flags.Last() != EFlags.NO_ENGINE && car.Flags.Last() != EFlags.IN_BOX && car.Flags.Last() != EFlags.ON_TOWTRUCK) {
+                // Diverse Events
+                
+                if (bigRoll < 3) {
+                    if (bigRoll < 1) {
+                        // Schwerer Unfall
+                        car.Flags.Add(EFlags.STANDING_ON_TRACK);
+                        car.RoundTime += 120;
+                        if (car == CurrentCar) {
+                            CrashState = ECrashState.BIG;
+                        }
+                    } else {
+                        // Leichter Unfall
+                        car.RoundTime += 30;
+                        if (Dice.Roll() > 50) {
+                            car.Flags.Add(EFlags.SMALL_DAMAGE);
+                            car.RoundTime += 60;
+                            if (car == CurrentCar) {
+                                CrashState = ECrashState.SMALL;
+                            }
+                        }
+                    }
+                }
+
+                // Motorschaden
+                if (bigRoll == 4) {
+                    car.Flags.Add(EFlags.NO_ENGINE);
+                    car.RoundTime += 120;
+                }
+
+                var smallRoll = Dice.Roll();
+                if (smallRoll < 10) {
+                    // Kleiner Fahrfehler
+                    car.RoundTime += (double)new Random().Next(1, 4);
+                } else if (smallRoll > 95) {
+                    // Großer Fahrfehler
+                    car.RoundTime += (double)new Random().Next(5, 11);
+                }
+            }
+            
+            // Wetter wechseln
+            if (bigRoll >= 7 && bigRoll < 9) {
+                WeatherChange();
+            }
+            
+            // Roundtime formatieren
+            if (car.RoundTimeS == 59) {
+                car.RoundTimeS = 0;
+                car.RoundTimeM += 1;
+            } else {
+                car.RoundTimeS += 1;
+            }
+        }
+        
+        // Position Berechnung
+        var sortedCars = CarFactory.CarList
+            .OrderByDescending(c => c.CurrentRounds)      // Meiste Runden zuerst
+            .ThenByDescending(c => c.TrackProgress)       // Bei gleicher Runde: Wer ist weiter auf der Strecke?
+            .ToList();
+
+        for (int i = 0; i < sortedCars.Count; i++) {
+            sortedCars[i].Position = i + 1;
+        }
+        
+        // Charts/Gauges updaten
+        if (CurrentCar != null && CurrentCar.CarData != null) {
+            // Charts
+            _ = JS.InvokeVoidAsync("updateChartData", CurrentCar.CarData.Velocity, CurrentCar.CarData.Torque);
+            
+            // Gauges
+            _ = JS.InvokeVoidAsync("gaugeInterop.updateValue", "rpmCanvas", CurrentCar.CarData.Torque);
+            _ = JS.InvokeVoidAsync("gaugeInterop.updateValue", "speedCanvas", CurrentCar.CarData.Velocity);
+        }
+    }
+
+    // Wetter Logik
+    protected static void WeatherChange() {
+        var weatherroll = Dice.Roll();
+        Track.Weather = EWeather.CLEAR;
+        if (weatherroll >= 20 && weatherroll < 40) {
+            Track.Weather = EWeather.EXTRASUNNY;
+        }
+        if (weatherroll >= 40 && weatherroll < 60) {
+            Track.Weather = EWeather.RAIN;
+        }
+        if (weatherroll >= 60 && weatherroll < 80) {
+            Track.Weather = EWeather.THUNDER;
+        }
+        if (weatherroll >= 80 && weatherroll <= 100) {
+            Track.Weather = EWeather.SNOW;
+        }
+    }
+
+    // Auto-Auswahl Logik
+    protected void ToggleDropdownTable() {
+        ShowDropdownTable = true;
+        ShowDropdownButton = false;
+    }
+
+    protected void ToggleDropdownButton(Car car) {
+        ShowDropdownTable = false;
+        ShowDropdownButton = true;
+        
+        CurrentCar = car;
+
+        _ = JS.InvokeVoidAsync("resetCharts");
+    }
+    
+    // Rundenzeiten Delta Farbe Logik
+    protected string GetLaptimeDeltaColor(double laptime) {
+        if (laptime == CurrentCar.BestRoundTime) return "best";
+        if ((laptime - CurrentCar.BestRoundTime) < 0) return "faster";
+        return "slower";
+    }
+    
+    // Reifen Verfärbungslogik
+    protected string GetTireColorClass(double temp) {
+        if (temp < 70.0) return "blue";
+        if (temp >= 70.0 && temp < 90.0) return "green";
+        if (temp >= 90.0 && temp < 100.0) return "yellow";
+        return "red";
+    }
+    
+    // Crash Overlay Schließen Logik
+    protected void CloseCrashOverlay() {
+        CrashState = ECrashState.NONE;
+    }
+}

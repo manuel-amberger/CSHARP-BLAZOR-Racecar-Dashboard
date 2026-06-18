@@ -1,0 +1,624 @@
+﻿/* Body */
+body {
+    user-select : none;
+    color : white;
+    background : radial-gradient(circle at top left, #0F1C2B, #0B1420);
+}
+
+/* Helper Klassen */
+.hide {
+    display : none;
+}
+
+.hrThick {
+    height : 3px;
+    background-color : white;
+    margin : 20px 0;
+}
+
+/* Dashboard Wrapper */
+#dashboardWrapper {
+    display : grid;
+    grid-template-columns : repeat(3, 1fr);
+    gap : 25px;
+    margin : 25px 25px 45px 25px;
+    filter : blur(0px);
+    will-change : filter;
+    transition : filter 0.5s ease-in-out;
+}
+
+#dashboardWrapper.dashboardBlur {
+    filter : blur(15px);
+    pointer-events : none;
+}
+
+/* Karten Wrapper */
+.cardWrapper {
+    display : flex;
+    flex-direction : column;
+    justify-content : center;
+    align-items : center;
+    height : 375px;
+    width : 470px !important;
+    border : solid 5px black;
+    border-radius : 15px;
+    background-color : #121E2B;
+}
+
+/* Auto-Auswahl Button */
+#dropdownButton {
+    height : 145px;
+    width : 80%;
+    border : solid 3px white;
+}
+
+#dropdownButton img {
+    height : 137px;
+    border-radius : 3px;
+}
+
+/* Auto-Auswahl Dropdown */
+#dropdownWrapper {
+    height : 175px;
+    width : 80%;
+    border : solid 3px white;
+    border-radius : 3px;
+}
+
+#dropdownWrapper .position {
+    margin-right : 25px;
+}
+
+/* Fahrer Informationen */
+#driverInformationWrapper, #driverInformationWrapper p {
+    margin : 0;
+}
+
+#driverInformationWrapper p span, #weather span {
+    font-family : "BBH Bartle";
+}
+
+/* Stopuhr */
+#stopwatchWrapper {
+    display : flex;
+    flex-direction : column;
+    justify-content : center;
+    align-items : center;
+    height : 145px;
+    width : 85%;
+    padding : 15px;
+    border : solid 3px white;
+    border-radius : 5px;
+    background-color: #0E1926;
+    overflow : hidden;
+}
+
+#stopwatchWrapper p {
+    text-align : center;
+    font-family : "BBH Bartle";
+    font-size : 1.25rem;
+    margin : 0;
+}
+
+#stopwatchWrapper div {
+    font-weight : bold;
+    font-size : 2.5rem;
+}
+
+/* Position */
+#positionWrapper p {
+    font-family : "BBH Bartle";
+    font-size : 1.25rem;
+    margin : 0;
+    margin-top : 10px;
+}
+
+#positionWrapper #position {
+    text-align : center;
+    margin : 0;
+    font-size : 5rem;
+}
+
+/* Rennstrecke */
+#circuitWrapper {
+    justify-content : start;
+    position : relative;
+}
+
+#circuit {
+    margin-top : 25px;
+    height : 70%;
+}
+
+/* Auto Darstellung */
+.carDot {
+    display : flex;
+    justify-content : center;
+    align-items : center;
+    width : 14px;
+    height : 14px;
+    padding : 10px;
+    color : black;
+    font-size : 1.05rem;
+    background-color : grey;
+    border-radius : 50%;
+}
+
+#car1 { position : absolute; top : 73%; left : 50%; }
+#car2 { position : absolute; top : 40%; left : 25%; }
+#car3 { position : absolute; top : 6%; left : 16%; }
+#car4 { position : absolute; top : 27%; left : 61%; }
+#car5 { position : absolute; top : 28%; left : 33%; }
+#car6 { position : absolute; top : 50%; left : 36%; }
+#car7 { position : absolute; top : 49%; left : 65%; }
+#car8 { position : absolute; top : 71%; left : 80%; }
+
+/* Wetter */
+#weather {
+    font-size : 1.25rem;
+}
+
+/* Überschriften */
+#lapTimesWrapper h3, #rpmChartWrapper h3, #tireWrapper h3 {
+    font-family : "BBH Bartle";
+    font-size : 1.4rem;
+}
+
+/* Rundenzeit Loader */
+#lapTimeLoader {
+    margin-top : 20px;
+    font-size : 2.1rem;
+}
+
+.lapRow.loader {
+    color : transparent;
+    position : relative;
+    overflow : hidden;
+    width : 100%;
+}
+
+.lapRow.loader::after {
+    content : "";
+    position : absolute;
+    top : 0;
+    left : -150%;
+    height : 100%;
+    width : 150%;
+
+    background : linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.08),
+            transparent
+    );
+
+    animation : shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { left : -150%; }
+    100% { left : 150%; }
+}
+
+/* Rundenzeit */
+#lapTimesWrapper {
+    justify-content : start;
+    grid-row : span 2;
+    height : 774px !important;
+    padding : 25px 35px;
+    overflow : hidden;
+}
+
+#lapTimeTableContainer {
+    max-height : 90%;
+    padding-right : 10px;
+    margin-top : 20px;
+    width : 85%;
+    font-size : 2.1rem;
+    overflow-y : auto;
+}
+
+#lapTimeTableContainer::-webkit-scrollbar {
+    width : 7px;
+}
+
+#lapTimeTableContainer::-webkit-scrollbar-thumb {
+    background : white;
+    border-radius : 10px;
+}
+
+.lapRow {
+    display : flex;
+    justify-content : center;
+    align-items : center;
+    background : #0E1926;
+    border : 3px solid white;
+    border-radius : 10px;
+    padding : 10px 20px;
+    margin-bottom : 12px;
+    width : 100%;
+    transition : 0.2s ease;
+}
+
+.lapNumber {
+    font-weight : bold;
+    opacity : 0.8;
+    padding-right : 15px;
+}
+
+.lapTime {
+    letter-spacing : 2px;
+    padding-right : 10px;
+}
+
+.lapGap {
+    font-size : 1.1rem;
+    font-family : monospace;
+    opacity : 0.8;
+}
+
+.lapGap.faster {
+    color : #00c853;
+}
+
+.lapGap.slower {
+    color : #ff3d00;
+}
+
+.lapGap.best {
+    color : #aa00ff;
+}
+
+/* Event Anzeige */
+#eventContainer {
+    display : flex;
+    justify-content : center;
+    align-items : center;
+    background : #0E1926;
+    border : 3px solid white;
+    border-radius : 10px;
+    padding : 10px 20px;
+    width : 80%;
+    transform : translateY(50px);
+}
+
+#eventContainer .value {
+    font-size : 1.6rem;
+}
+
+/* Tachos */
+#gaugeContainer {
+    display : flex;
+    flex-direction : row;
+    justify-content : center;
+    gap : 20px;
+    transform : translateY(45px);
+}
+
+#speedGauge {
+    transform: translateX(+50px);
+}
+
+#rpmGauge {
+    transform: translateX(-50px);
+}
+
+.gauge .semi-circle {
+    display : flex;
+    justify-content : center;
+    align-items: center;
+    position : relative;
+    height : 120px;
+    width : 180px;
+}
+
+.gauge .inner {
+    display : flex;
+    flex-direction : column;
+    justify-content: center;
+    align-items: center;
+    transform : translateY(-65px);
+}
+
+.gauge .value {
+    font-size : 2.3rem;
+    font-weight : bold;
+}
+
+.gauge .label {
+    font-size : 1.2rem;
+    font-family : "BBH Bartle";
+}
+
+/* Gang Anzeige */
+#gear {
+    text-align : center;
+    margin : 0;
+    margin-bottom : 17px;
+    font-size : 2.1rem;
+}
+
+#gear .value {
+    font-weight : bold;
+    font-size : 2.6rem;
+}
+
+#gear .label {
+    font-family : "BBH Bartle";
+}
+
+/* Geschwindigkeit Chart */
+#speedChartWrapper {
+    justify-content : start;
+    padding : 25px 35px;
+}
+
+#speedChartWrapper h3 {
+    font-family : "BBH Bartle";
+    font-size : 1.1rem;
+}
+
+#speedChart, #rpmChart {
+    width : 90% !important;
+    margin-top : 10px;
+}
+
+/* Drehzahl Chart */
+#rpmChartWrapper {
+    justify-content : start;
+    padding : 25px 35px;
+}
+
+#tireWrapper {
+    justify-content : start;
+    padding : 25px 35px;
+}
+
+/* Tire Monitor */
+#tireGridContainer {
+    display : grid;
+    grid-template-columns : 145px 125px 145px;
+    margin-top : 10px;
+}
+
+#carCol {
+    display : flex;
+    justify-content : center;
+    align-items : center;
+}
+
+.tireCol {
+    display : flex;
+    align-items : center;
+    flex-direction : column;
+    gap : 27px;
+}
+
+.tireContainer {
+    display : flex;
+    flex-direction : row;
+    margin-top : 15px;
+}
+
+.tireValue {
+    display : flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : center;
+    gap : 3px;
+    font-size : 1.3rem;
+    font-weight : bold;
+}
+
+.tireValue p {
+    margin : 0px;
+}
+
+#tireColLeft .tire {
+    margin-left : 10px;
+}
+
+#tireColRight .tire {
+    margin-right : 10px;
+}
+
+.tire {
+    position : relative;
+    width : 60px;
+    height : 95px;
+    background-color : #222;
+    border-radius : 80px / 40px;
+
+    background :
+            linear-gradient(90deg,
+            rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.05) 5%, transparent 15%,
+            transparent 85%, rgba(255,255,255,0.05) 95%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at top, rgba(255,255,255,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse at center, #3a3a3a 0%, #151515 70%, #0a0a0a 100%);
+
+    box-shadow :
+            inset 0 20px 30px rgba(255,255,255,0.1),
+            inset 0 -20px 30px rgba(0,0,0,0.8),
+            0 15px 35px rgba(0, 0, 0, 0.2);
+
+    overflow : hidden;
+}
+
+.tire.red {
+    background-color : #a00;
+
+    background :
+            linear-gradient(90deg,
+            rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.05) 5%, transparent 15%,
+            transparent 85%, rgba(255,255,255,0.05) 95%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at top, rgba(255, 200, 200, 0.25) 0%, transparent 60%),
+            radial-gradient(ellipse at center, #c00 0%, #800 70%, #500 100%);
+
+    box-shadow :
+            inset 0 20px 30px rgba(255,255,255,0.1),
+            inset 0 -20px 30px rgba(0,0,0,0.6),
+            0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.tire.blue {
+    background-color : #0055a5;
+    
+    background :
+            linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.05) 5%, transparent 15%, transparent 85%, rgba(255,255,255,0.05) 95%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at top, rgba(200, 230, 255, 0.3) 0%, transparent 60%),
+            radial-gradient(ellipse at center, #0066cc 0%, #003388 70%, #001144 100%);
+
+    box-shadow :
+            inset 0 20px 30px rgba(255,255,255,0.15),
+            inset 0 -20px 30px rgba(0,0,0,0.7),
+            0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.tire.green {
+    background-color : #008833;
+    
+    background :
+            linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.05) 5%, transparent 15%, transparent 85%, rgba(255,255,255,0.05) 95%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at top, rgba(210, 255, 210, 0.25) 0%, transparent 60%),
+            radial-gradient(ellipse at center, #10aa40 0%, #056620 70%, #013305 100%);
+
+    box-shadow :
+            inset 0 20px 30px rgba(255,255,255,0.15),
+            inset 0 -20px 30px rgba(0,0,0,0.7),
+            0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.tire.yellow {
+    background-color : #ddaa00;
+    
+    background :
+            linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(255,255,255,0.05) 5%, transparent 15%, transparent 85%, rgba(255,255,255,0.05) 95%, rgba(0,0,0,0.4) 100%),
+            radial-gradient(ellipse at top, rgba(255, 255, 255, 0.4) 0%, transparent 60%),
+            radial-gradient(ellipse at center, #ffd700 0%, #b8860b 70%, #553300 100%);
+
+    box-shadow :
+            inset 0 20px 30px rgba(255,255,255,0.3),
+            inset 0 -20px 30px rgba(0,0,0,0.6),
+            0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+#carPicture {
+    width : 125px;
+}
+
+
+/* Crash/Podium Overlay Wrapper */
+#crashOverlayWrapper, #podiumOverlayWrapper {
+    display : flex;
+    justify-content : center;
+    align-items : center;
+    position : fixed;
+    top : 0;
+    left : 0;
+    height : 100vh;
+    width : 100vw;
+    z-index : 10;
+}
+
+/* Crash/Podium Overlay Karte */
+#crashOverlay, #podiumOverlay {
+    display : flex;
+    flex-direction : column;
+    justify-content : center;
+    align-items : center;
+    height : 450px;
+    width : 550px;
+    background-color: #0B1420;
+    border-radius : 25px;
+    overflow : hidden;
+}
+
+/* Crash Overlay */
+#crashOverlay .heading {
+    font-family : "BBH Bartle";
+    text-align : center;
+    margin-bottom : 30px;
+}
+
+#crashOverlay h4 {
+    margin-bottom : 15px;
+}
+
+#crashOverlay button {
+    font-size : 1.4rem;
+    width : 300px;
+    margin-top : 25px;
+}
+
+#crashOverlay.bigCrash {
+    border : 7.5px solid red;
+    animation : borderBlinkBigCrash 1.5s infinite linear;
+}
+
+#crashOverlay.bigCrash .heading {
+    color : red;
+}
+
+#crashOverlay.smallCrash {
+    border : 7.5px solid #FFD700;
+    animation : borderBlinkSmallCrash 1.5s infinite linear;
+}
+
+#crashOverlay.smallCrash .heading {
+    color : yellow;
+}
+
+@keyframes borderBlinkBigCrash {
+    0% { border-color : rgba(255, 0, 0, 1); }
+    50% { border-color : rgba(255, 0, 0, 0.2); }
+    100% { border-color : rgba(255, 0, 0, 1); }
+}
+
+@keyframes borderBlinkSmallCrash {
+    0% { border-color : rgba(255, 215, 0, 1); }
+    50% { border-color : rgba(255, 215, 0, 0.2); }
+    100% { border-color : rgba(255, 215, 0, 1); }
+}
+
+/* Podium Overlay Karte */
+#podiumOverlay {
+    border : 7.5px solid #000000;
+    animation : borderBlinkCheckeredFlag 3s infinite linear;
+}
+
+#podiumOverlay .heading {
+    font-family : "BBH Bartle";
+    text-align : center;
+    margin-bottom : 30px;
+}
+
+#podiumOverlay .secondaryHeading {
+    align-self : flex-start;
+    margin : 0px 0px 17px 42px;
+}
+
+#podiumList #p1 {
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    font-size : 1.5rem;
+}
+
+#podiumList #p2 {
+    color: #E0E0E0;
+    text-shadow: 0 0 10px rgba(224, 224, 224, 0.2);
+    font-size : 1.4rem;
+    margin-left : 15px;
+}
+
+#podiumList #p3 {
+    color: #CD7F32;
+    text-shadow: 0 0 10px rgba(205, 127, 50, 0.2);
+    font-size : 1.3rem;
+    margin-left : 30px;
+}
+
+@keyframes borderBlinkCheckeredFlag {
+    0% { border-color: rgba(0, 0, 0, 1); }
+    50% { border-color: rgba(255, 255, 255, 1); }
+    100% { border-color: rgba(0, 0, 0, 1); }
+}

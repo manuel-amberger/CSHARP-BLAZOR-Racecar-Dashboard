@@ -1,0 +1,5 @@
+﻿namespace ApexView;
+
+public enum EFlags {
+    IN_BOX, STANDING_ON_TRACK, NO_ENGINE, ON_TOWTRUCK, DNF, DRIVING, SMALL_DAMAGE, TIRE_EXPLOSION
+}

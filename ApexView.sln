@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexView", "ApexView\ApexView.csproj", "{DE42526C-DF37-4231-B5F7-4B156B4BAFC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexWebGui", "ApexWebGui\ApexWebGui.csproj", "{61EEB56C-465A-42E4-82B7-C915F4A2810B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE42526C-DF37-4231-B5F7-4B156B4BAFC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE42526C-DF37-4231-B5F7-4B156B4BAFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE42526C-DF37-4231-B5F7-4B156B4BAFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE42526C-DF37-4231-B5F7-4B156B4BAFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61EEB56C-465A-42E4-82B7-C915F4A2810B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61EEB56C-465A-42E4-82B7-C915F4A2810B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61EEB56C-465A-42E4-82B7-C915F4A2810B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61EEB56C-465A-42E4-82B7-C915F4A2810B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
