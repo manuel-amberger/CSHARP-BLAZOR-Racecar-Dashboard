@@ -19,6 +19,7 @@
 - Utilizes an asynchronous backend ticking service (`RepeatingTaskService`) to drive the simulation logic every second.
 - Uses Blazor JSInterop to seamlessly connect C# backend logic with frontend JavaScript gauge.js and Chart.js libraries.
 - Features automatic C# data modeling for realistic tyre heating/cooling and random race incidents (engine failures, driver mistakes, crashes).
+- **Data Source:** Driven by a custom-built, lightweight physics and telemetry simulation engine written in C#. No external hardware or racing game APIs are required to run the dashboard.
 
 ### Technologies Used:
 
@@ -62,11 +63,21 @@
 
 - **Race Event Overlays:** Features dynamic fullscreen and partial pop-up notifications for major race events. This includes minor and major accident alerts ("Small/Big Crash") to track on-track incidents, as well as a celebratory podium sequence that triggers when a car successfully finishes the race in the top three.
 
-   <img src="img/screenshot_smallCrashOverlay.png" alt="Small Crash Overlay" width=600 style="margin-bottom : 200px;">
+   <img src="img/screenshot_smallCrashOverlay.png" alt="Small Crash Overlay" width=600>
    
    <img src="img/screenshot_bigCrashOverlay.png" alt="Big Crash Overlay" width=600>
    
    <img src="img/screenshot_podiumOverlay.png" alt="Podium Overlay" width=600>
+
+## How to Run the Project Local
+
+To start the dashboard on your local machine, follow these steps:
+
+1. Clone the repository or download the source code.
+2. Open the solution file (`ApexView.sln`) in **JetBrains Rider** or **Visual Studio**.
+3. Ensure you have the **.NET 8.0 SDK** (or your used version) installed.
+4. Build and run the project via the IDE (or use `dotnet run` in the terminal).
+5. Open your browser and navigate to `http://localhost:5000` (or the port specified by your IDE).
 
 ## About
 
