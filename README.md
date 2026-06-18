@@ -13,16 +13,6 @@
 - **Live Analytical Charts:** Features rolling line graphs and canvas gauges that animate speed and RPM data in real time.
 - **Immersive Race Overlays:** Displays conditional full-screen overlays for race incidents (minor/severe crashes) and a final podium screen when the race finishes.
 
-## Card Descriptions
-
-- **Driver Information Card:** Displays the selected driver's car photo, name, team, and age, combined with an interactive dropdown to switch between all 20 cars.
-- **Stopwatch & Position Card:** Shows the current live lap timer alongside the driver's current position in the race.
-- **Circuit & Weather Card:** Visualizes the track map (Red Bull Ring) with a dynamic dot tracking the car's current section, plus a live weather status indicator. The tracking dot accurately remains stationary at the pit lane location when the car is pitting, and will also freeze at its last known position on the track if the vehicle stops due to a mechanical issue (e.g., engine failure).
-- **Lap Times Card:** Lists all completed lap times for the selected car, highlighting the personal best lap and calculating deltas to it. If no lap has been completed yet, an animated loading indicator is displayed. Additionally, the list features an automatic scrolling function to ensure the most recent lap times always remain visible when the history grows.
-- **General Telemetry Card:** Displays active race flags alongside live digital readouts and canvas gauges for Speed ($km/h$) and RPM ($rpm$), as well as a display for the current gear.
-- **Speed & RPM Chart Cards:** Uses rolling line charts to visualize the historical telemetry data of the vehicle's speed and engine torque over the last 30 seconds.
-- **Tyre Monitor Card:** Features a visual top-down graphic of the chassis showing live pressure and temperature for all four tyres, color-coded by their current grip efficiency and depending on the current weather.
-
 ## Technical Notes
 
 - Built as a component-based web application using Blazor WebAssembly/Server.
@@ -39,6 +29,16 @@
 
 ## Preview
 [![Dashboard Screenshot](img/screenshot_main.png)](img/screenshot_main.png)
+
+## Card Descriptions
+
+- **Driver Information Card:** Displays the selected driver's car photo, name, team, and age, combined with an interactive dropdown to switch between all 20 cars sorted by position.
+- **Stopwatch & Position Card:** Shows the current live lap timer alongside the driver's current position in the race.
+- **Circuit & Weather Card:** Visualizes the track map (Red Bull Ring) with a dynamic dot tracking the car's current section, plus a live weather status indicator. The tracking dot accurately remains stationary at the pit lane location when the car is pitting, and will also freeze at its last known position on the track if the vehicle stops due to a mechanical issue (e.g., engine failure).
+- **Lap Times Card:** Lists all completed lap times for the selected car, highlighting the personal best lap and calculating deltas to it. If no lap has been completed yet, an animated loading indicator is displayed. Additionally, the list features an automatic scrolling function to ensure the most recent lap times always remain visible when the history grows.
+- **General Telemetry Card:** Displays active race flags alongside live digital readouts and canvas gauges for Speed ($km/h$) and RPM ($rpm$), as well as a display for the current gear.
+- **Speed & RPM Chart Cards:** Uses rolling line charts to visualize the historical telemetry data of the vehicle's speed and engine torque over the last 30 seconds.
+- **Tyre Monitor Card:** Features a visual top-down graphic of the chassis showing live pressure and temperature for all four tyres, color-coded by their current grip efficiency and depending on the current weather.
 
 ## About
 
