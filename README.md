@@ -2,9 +2,11 @@
 
 🏎️ A school project featuring a real-time motorsport dashboard built with Blazor. Tracks 20 cars with live lap times, positions, speed, RPM, gears, telemetry charts, tyre simulation (pressure/temp), and immersive crash/podium overlays.
 
+> ⚠️ **Note on responsive Design:** This dashboard is custom-built and optimized exclusively for standard laptop and some desktop monitors to display the extensive telemetry grid. It is **not** designed for mobile devices, tablets, very small screens and some desktop monitors, where layout scaling may distort.
+
 ## Features
 
-- **20-Car Grid Selection:** Switch between 20 different drivers via an interactive dropdown menu to update the telemetry in real time.
+- **20-Car Grid Selection:** Switch between 20 different DTM drivers via an interactive dropdown menu to update the telemetry in real time.
 - **Live Positioning & Lap Times:** Automatically calculates live positions based on track progress and records detailed lap histories with color-coded time deltas.
 - **Dynamic Physics Simulation:** Simulates speed, engine RPM, and gears (1-8) based on track sections (straights vs. corners).
 - **Advanced Tyre Monitor:** Tracks pressure (psi) and temperature (°C) for each tyre individually, where optimal temperatures directly boost car performance.
@@ -13,7 +15,7 @@
 
 ## Card Descriptions
 
-- **Driver Information Card:** Displays the selected driver's photo, name, team, and age, combined with an interactive dropdown to switch between all 20 cars.
+- **Driver Information Card:** Displays the selected driver's car photo, name, team, and age, combined with an interactive dropdown to switch between all 20 cars.
 - **Stopwatch & Position Card:** Shows the current live lap timer alongside the driver's current position in the race.
 - **Circuit & Weather Card:** Visualizes the track map (Red Bull Ring) with a dynamic dot tracking the car's current section, plus a live weather status indicator.
 - **Lap Times Card:** Lists all completed lap times for the selected car, highlighting the personal best lap and calculating deltas to it.
