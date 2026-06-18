@@ -36,7 +36,7 @@
 - CSS3 (Bootstrap & Custom Grid Layouts)
 
 ## Preview
-[![Dashboard Screenshot](screenshot.png)](screenshot.png)
+[![Dashboard Screenshot](img/screenshot_main.png)](img/screenshot_main.png)
 
 ## About
 
