@@ -33,12 +33,40 @@
 ## Card Descriptions
 
 - **Driver Information Card:** Displays the selected driver's car photo, name, team, and age, combined with an interactive dropdown to switch between all 20 cars sorted by position.
+
+   <img src="img/screenshot_driverinformation.png" alt="Driver Information & Selection Card" width=300px> 
+
 - **Stopwatch & Position Card:** Shows the current live lap timer alongside the driver's current position in the race.
+
+    <img src="img/screenshot_stopwatch.png" alt="Stopwatch & Position Card" width=300px>
+
 - **Circuit & Weather Card:** Visualizes the track map (Red Bull Ring) with a dynamic dot tracking the car's current section, plus a live weather status indicator. The tracking dot accurately remains stationary at the pit lane location when the car is pitting, and will also freeze at its last known position on the track if the vehicle stops due to a mechanical issue (e.g., engine failure).
+
+   <img src="img/screenshot_circuit.png" alt="Circuit & Weather Card " width=300px>
+
 - **Lap Times Card:** Lists all completed lap times for the selected car, highlighting the personal best lap and calculating deltas to it. If no lap has been completed yet, an animated loading indicator is displayed. Additionally, the list features an automatic scrolling function to ensure the most recent lap times always remain visible when the history grows.
+
+   <img src="img/screenshot_laptimes.png" alt="Laptimes Card" width=300px>
+
 - **General Telemetry Card:** Displays active race flags alongside live digital readouts and canvas gauges for Speed ($km/h$) and RPM ($rpm$), as well as a display for the current gear.
+
+   <img src="img/screenshot_generalTelemetry.png" alt="General Telemetry Card" width=300px>
+
 - **Speed & RPM Chart Cards:** Uses rolling line charts to visualize the historical telemetry data of the vehicle's speed and engine torque over the last 30 seconds.
+
+   <img src="img/screenshot_speedChart.png" alt="Speed Chart Card" width=300px> <img src="img/screenshot_rpmChart.png" alt="RPM Chart Card" width=300px>
+
 - **Tyre Monitor Card:** Features a visual top-down graphic of the chassis showing live pressure and temperature for all four tyres, color-coded by their current grip efficiency and depending on the current weather.
+
+   <img src="img/screenshot_tireMonitor.png" width=300px>
+
+- **Race Event Overlays:** Features dynamic fullscreen and partial pop-up notifications for major race events. This includes minor and major accident alerts ("Small/Big Crash") to track on-track incidents, as well as a celebratory podium sequence that triggers when a car successfully finishes the race in the top three.
+
+   <img src="img/screenshot_smallCrashOverlay.png" alt="Small Crash Overlay" width=600 style="margin-bottom : 200px;">
+   
+   <img src="img/screenshot_bigCrashOverlay.png" alt="Big Crash Overlay" width=600>
+   
+   <img src="img/screenshot_podiumOverlay.png" alt="Podium Overlay" width=600>
 
 ## About
 
