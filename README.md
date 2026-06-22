@@ -82,5 +82,5 @@ To start the dashboard on your local machine, follow these steps:
 ## About
 
 Created by Florian Heinreichsberger and Manuel Amberger, students at a technical high school (HTL) in austria, as a school project for the software development subject.
-* [Florian Heinreichsberger](https://github.com/SEIN_GITHUB_BENUTZERNAME) – Core Architecture, Simulation & UI Functionality
+* [Florian Heinreichsberger](https://github.com/Flous235) – Core Architecture, Simulation & UI Functionality
 * [Manuel Amberger](https://github.com/manuel-amberger) – UI Design, Telemetry Charts & Simulation
